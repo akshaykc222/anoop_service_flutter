@@ -1,0 +1,18 @@
+{
+
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "seed_sales",
+            "request": "launch",
+            "type": "dart",
+           
+        },
+        {
+            "name": "seed_sales (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        }
+    ]
+}
