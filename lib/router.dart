@@ -7,6 +7,7 @@ import 'package:seed_sales/screens/enquiry/body.dart';
 import 'package:seed_sales/screens/login/body.dart';
 import 'package:seed_sales/screens/products/componets/product_list.dart';
 import 'package:seed_sales/screens/region/body.dart';
+import 'package:seed_sales/screens/roles/body.dart';
 import 'package:seed_sales/screens/roles/componets/roles_list.dart';
 import 'package:seed_sales/screens/services/componets/order.dart';
 import 'package:seed_sales/screens/services/componets/services.dart';
@@ -28,7 +29,7 @@ class RouterPage {
       case adminPanel:
         return MaterialPageRoute(builder: (_) => const DashBoard());
       case roles:
-        return MaterialPageRoute(builder: (_) => const RoleList());
+        return MaterialPageRoute(builder: (_) => const UserRoles());
       case roleList:
         return MaterialPageRoute(builder: (_) => const RoleList());
       case userCreation:

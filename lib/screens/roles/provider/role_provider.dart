@@ -4,18 +4,35 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:seed_sales/screens/roles/models/page_model.dart';
+import 'package:seed_sales/screens/roles/models/page_permission.dart';
 import 'package:seed_sales/screens/roles/models/role_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../../../constants.dart';
 import '../../bussiness/models/bussinessmode.dart';
-
+import 'package:collection/collection.dart';
 class RoleProviderNew with ChangeNotifier {
   List<Roles> roleList = [];
   String token = "";
   bool loading = false;
   Roles? selectedDropdownvalue;
   List<PageModel> pageList = [];
+  List<PagePermission> pagePermissions=[];
+
+
+
+  addPermissionList(PagePermission model){
+    PagePermission? p=pagePermissions.singleWhereOrNull((element) => element.pageName==model.pageName);
+    if(p==null){
+      pagePermissions.add(model);
+    }else{
+      pagePermissions.removeWhere((element) => element.pageName==model.pageName);
+      pagePermissions.add(model);
+    }
+    print(model.toJson());
+
+  }
+
   Future<void> getToken() async {
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
 
@@ -23,6 +40,8 @@ class RoleProviderNew with ChangeNotifier {
   }
 
   Future<void> getPages() async {
+    loading=true;
+
     notifyListeners();
     if (token == "") {
       await getToken();
@@ -35,8 +54,63 @@ class RoleProviderNew with ChangeNotifier {
     };
 
     final uri = Uri.parse('https://$baseUrl/api/v1/pages/');
-    debugPrint(token);
+
     final response = await http.get(uri, headers: header);
+    debugPrint(response.body);
+    Map<String, dynamic> data = json.decode(response.body);
+    pageList = List<PageModel>.from(data["pages"].map((x) => PageModel.fromJson(x)));
+    notifyListeners();
+  }
+  Future<PagePermission?> getPermissions(int id) async {
+    loading=true;
+
+    notifyListeners();
+    if (token == "") {
+      await getToken();
+    }
+    roleList.clear();
+    debugPrint("======================================================");
+    var header = {
+      "Authorization": "Token $token",
+      HttpHeaders.contentTypeHeader: 'application/json'
+    };
+
+    final uri = Uri.parse('https://$baseUrl/api/v1/permisions/$id');
+
+    final response = await http.get(uri, headers: header);
+    debugPrint(response.body);
+    Map<String, dynamic> data = json.decode(response.body);
+
+    loading=false;
+    notifyListeners();
+    if(data.containsKey("error")){
+      return null;
+    }
+   return PagePermission.fromJson(data);
+  }
+  Future<void> updatePermissions(BuildContext context) async {
+    loading=true;
+
+    notifyListeners();
+    if (token == "") {
+      await getToken();
+    }
+    roleList.clear();
+    debugPrint("======================================================");
+    var header = {
+      "Authorization": "Token $token",
+      HttpHeaders.contentTypeHeader: 'application/json'
+    };
+
+    final uri = Uri.parse('https://$baseUrl/api/v1/permisions/');
+    for (var element in pagePermissions)  {
+      final response = await http.post(uri, headers: header,body: jsonEncode(element));
+      debugPrint(response.body);
+
+
+    }
+    loading=false;
+    notifyListeners();
   }
 
   void getBusinessList(BuildContext context) async {

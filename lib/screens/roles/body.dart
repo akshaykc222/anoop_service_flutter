@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:seed_sales/componets.dart';
+import 'package:seed_sales/screens/roles/provider/role_provider.dart';
 
 import '../../constants.dart';
 import 'componets/current_user.dart';
@@ -55,7 +57,7 @@ class UserRoles extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: lightBlack,
         onPressed: () {
-          Navigator.pop(context);
+          Provider.of<RoleProviderNew>(context,listen: false).updatePermissions(context);
         },
         child:const Center(
           child:  Icon(Icons.done,color: textColor,size: 30,),

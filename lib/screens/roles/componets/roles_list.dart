@@ -154,6 +154,7 @@ class RoleListTile extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
         onTap: (){
+          Provider.of<RoleProviderNew>(context,listen: false).setSelctedDropDown(title);
           Navigator.push(
               context, MaterialPageRoute(builder: (_) => const UserRoles()));
         },
@@ -168,7 +169,7 @@ class RoleListTile extends StatelessWidget {
                 style: const TextStyle(
                     color: textColor, fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              spacer(5),
+              spacer(8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [

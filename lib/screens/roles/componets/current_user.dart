@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:seed_sales/screens/categories/componts/categoryform.dart';
+import 'package:seed_sales/screens/roles/provider/role_provider.dart';
 
 import '../../../constants.dart';
 
@@ -8,22 +11,30 @@ class CurrentUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<RoleProviderNew>(context,listen: false).getBusinessList(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children:  [
-       const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            currentuser,
-            style: TextStyle(
-                color: textColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w800),
-          ),
+        Consumer<RoleProviderNew>(
+
+          builder: (context, snapshot,child) {
+            return  Padding(
+              padding:const EdgeInsets.all(8.0),
+              child: Text(
+                snapshot.selectedDropdownvalue==null?'please select a role':'selected role  : ${snapshot.selectedDropdownvalue!.roleName}',
+                style: const TextStyle(
+                    color: textColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800),
+              ),
+            );
+          }
         ),
         InkWell(
             onTap: (){
-              Navigator.pushNamed(context, roleList);
+
+                   Navigator.pushNamed(context, roleList);
+
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),

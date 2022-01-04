@@ -140,11 +140,11 @@ class UserProviderNew with ChangeNotifier {
         "Access-Control-Allow-Origin": "*",
         HttpHeaders.contentTypeHeader: 'application/json'
       };
-      var body = {"role": 1, "business": 1, "user": 1};
+
       print(body);
       final uri = Uri.parse('https://$baseUrl/api/v1/user_roles/');
       print(uri);
-      final res = await http.post(uri, headers: header, body: jsonEncode(body));
+      final res = await http.post(uri, headers: header, body: jsonEncode(roleList));
       log(res.body);
       showDialog(
           context: context,
@@ -165,15 +165,16 @@ class UserProviderNew with ChangeNotifier {
             );
           });
     } else if (response.statusCode == HttpStatus.badRequest) {
-      Map<String, dynamic> data = json.decode(response.body);
+
       try {
-        log(data['error']);
+        Map<String, dynamic> data = json.decode(response.body);
+        String datad=json.encode(data);
         showDialog(
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
-                title: const Text('Faild'),
-                content: Text(data.toString()),
+                title: const Text('Failed'),
+                content: Text(datad),
                 actions: <Widget>[
                   CupertinoDialogAction(
                     onPressed: () {
@@ -185,7 +186,7 @@ class UserProviderNew with ChangeNotifier {
               );
             });
       } catch (e) {
-        log(e.toString());
+        log(e.toString()+"llll");
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -215,7 +216,32 @@ class UserProviderNew with ChangeNotifier {
             content: const Text('This will delete this business'),
             actions: <Widget>[
               CupertinoDialogAction(
-                onPressed: () {
+                onPressed: () async {
+                  //action for delete
+
+                  loading = true;
+                  notifyListeners();
+                  if (token == "") {
+                    await getToken();
+                  }
+
+                  debugPrint(
+                      "======================================================");
+                  var header = {
+                    "Authorization": "Token $token",
+                    HttpHeaders.contentTypeHeader: 'application/json'
+                  };
+
+                  final uri =
+                  Uri.parse('https://$baseUrl/api/v1/users/${model.id}');
+                  debugPrint(token);
+                  final response = await http.delete(uri, headers: header);
+                  debugPrint(response.body);
+
+                  //notifyListeners();
+
+                  notifyListeners();
+                  getBusinessList(context);
                   Navigator.pop(context);
                 },
                 child: const Text('delete'),
@@ -224,4 +250,7 @@ class UserProviderNew with ChangeNotifier {
           );
         });
   }
+
+
+
 }

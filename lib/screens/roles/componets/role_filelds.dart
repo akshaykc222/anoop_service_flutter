@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:seed_sales/componets.dart';
-import 'package:seed_sales/screens/roles/componets/roles_list.dart';
+import 'package:seed_sales/screens/roles/componets/current_user.dart';
+import 'package:seed_sales/screens/roles/models/page_model.dart';
+import 'package:seed_sales/screens/roles/models/page_permission.dart';
+import 'package:seed_sales/screens/roles/models/role_model.dart';
+import 'package:seed_sales/screens/roles/provider/role_provider.dart';
 
 import '../../../constants.dart';
 
@@ -13,14 +18,17 @@ class RoleFields extends StatefulWidget {
 }
 
 class _RoleFieldsState extends State<RoleFields> {
-  final List<String> permissionList = [
-    "Role",
-    "Create user",
-    "Bussiness",
-    "Services",
-    "Products",
-    "Reports"
-  ];
+
+
+  @override
+  void initState() {
+
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      Provider.of<RoleProviderNew>(context,listen: false).getPages();
+      Provider.of<RoleProviderNew>(context,listen: false).getBusinessList(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +41,7 @@ class _RoleFieldsState extends State<RoleFields> {
           //       Navigator.pushNamed(context, roleList);
           //     },
           //     child: columTextFileds(context)),
+          const CurrentUser(),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
             child: Text(
@@ -42,14 +51,24 @@ class _RoleFieldsState extends State<RoleFields> {
                   fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
             ),
           ),
-          ListView.builder(
-              shrinkWrap: true,
-              itemCount: permissionList.length,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (_, index) {
-                return UserRolesPermission(
-                    titlePermission: permissionList[index]);
-              })
+          Consumer<RoleProviderNew>(
+
+            builder: (context, snapshot,child) {
+              return snapshot.loading? Center(child:  Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:const [
+                  Text('Saving data ..',style: TextStyle(color: whiteColor),),
+                  CircularProgressIndicator(color: whiteColor,)
+                ],),): ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.pageList.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (_, index) {
+                    return UserRolesPermission(
+                        titlePermission: snapshot.pageList[index]);
+                  });
+            }
+          )
         ],
       ),
     );
@@ -82,7 +101,7 @@ class UserRolesPermission extends StatefulWidget {
   const UserRolesPermission({Key? key, required this.titlePermission})
       : super(key: key);
 
-  final String titlePermission;
+  final PageModel titlePermission;
 
   @override
   State<UserRolesPermission> createState() => _UserRolesPermissionState();
@@ -93,10 +112,40 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
   bool delete = false;
   bool edit = false;
   bool view = false;
+  bool l=true;
+  _update(PagePermission model){
+    Provider.of<RoleProviderNew>(context,listen: false).addPermissionList(model);
+  }
+
+  @override
+  void initState() {
+
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
+      PagePermission? p =await Provider.of<RoleProviderNew>(context,listen: false).getPermissions(widget.titlePermission.id);
+      if (this.mounted) {
+        setState(() {
+          l=false;
+        });
+        if(p!=null){
+          setState(() {
+
+            create=p.create;
+            delete=p.delete;
+            edit=p.update;
+            view=p.edit;
+          });
+        }
+      }
+
+
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return l?const Center(child: CircularProgressIndicator(),): Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
@@ -120,20 +169,14 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
                 children: [
                   const Icon(Icons.phone_android_outlined),
                   Text(
-                    widget.titlePermission,
+                    widget.titlePermission.pageName,
                     style: const TextStyle(
                         color: textColor,
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
                   ),
                   spacer(10),
-                  const Text(
-                    "user",
-                    style: TextStyle(
-                        color: textColor,
-                        fontWeight: FontWeight.normal,
-                        fontSize: 16),
-                  )
+
                 ],
               ),
             ),
@@ -165,7 +208,12 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
                                 value: view,
                                 onChanged: (value) {
                                   setState(() {
-                                    view = value;
+
+                                    Roles? r=  Provider.of<RoleProviderNew>(context,listen: false).selectedDropdownvalue;
+                                    if(r==null){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select role'),));}else{
+                                      view = value;
+                                    PagePermission p=PagePermission(role:r.id!, pageName: widget.titlePermission.id, edit: view, create: create, update: edit, delete: delete);
+                                    _update(p);}
                                   });
                                 },
                                 activeTrackColor: Colors.lightGreenAccent,
@@ -199,7 +247,12 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
                                 value: create,
                                 onChanged: (value) {
                                   setState(() {
-                                    create = value;
+
+                                    Roles? r=  Provider.of<RoleProviderNew>(context,listen: false).selectedDropdownvalue;
+                                    if(r==null){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select role'),));}else{
+                                      create = value;
+                                      PagePermission p=PagePermission(role:r.id!, pageName: widget.titlePermission.id, edit: view, create: create, update: edit, delete: delete);
+                                      _update(p);}
                                   });
                                 },
                                 activeTrackColor: Colors.lightGreenAccent,
@@ -237,7 +290,12 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
                                 value: edit,
                                 onChanged: (value) {
                                   setState(() {
-                                    edit = value;
+
+                                    Roles? r=  Provider.of<RoleProviderNew>(context,listen: false).selectedDropdownvalue;
+                                    if(r==null){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select role'),));}else{
+                                      edit = value;
+                                      PagePermission p=PagePermission(role:r.id!, pageName: widget.titlePermission.id, edit: view, create: create, update: edit, delete: delete);
+                                      _update(p);}
                                   });
                                 },
                                 activeTrackColor: Colors.lightGreenAccent,
@@ -271,7 +329,12 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
                                 value: delete,
                                 onChanged: (value) {
                                   setState(() {
-                                    delete = value;
+
+                                    Roles? r=  Provider.of<RoleProviderNew>(context,listen: false).selectedDropdownvalue;
+                                    if(r==null){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select role'),));}else{
+                                      delete = value;
+                                      PagePermission p=PagePermission(role:r.id!, pageName: widget.titlePermission.id, edit: view, create: create, update: edit, delete: delete);
+                                      _update(p);}
                                   });
                                 },
                                 activeTrackColor: Colors.lightGreenAccent,

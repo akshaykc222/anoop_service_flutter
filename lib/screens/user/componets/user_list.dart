@@ -93,7 +93,7 @@ class UserListTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                title.name!,
+                title.email!,
                 style: const TextStyle(
                     color: textColor,
                     fontSize: 18,
