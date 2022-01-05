@@ -11,26 +11,32 @@ import 'package:http/http.dart' as http;
 import '../../../constants.dart';
 import '../../bussiness/models/bussinessmode.dart';
 import 'package:collection/collection.dart';
+
 class RoleProviderNew with ChangeNotifier {
   List<Roles> roleList = [];
   String token = "";
   bool loading = false;
   Roles? selectedDropdownvalue;
   List<PageModel> pageList = [];
-  List<PagePermission> pagePermissions=[];
+  List<PagePermission> pagePermissions = [];
+  String roleName = "";
 
+  setRoleName(String name) {
+    roleName = name;
+    notifyListeners();
+  }
 
-
-  addPermissionList(PagePermission model){
-    PagePermission? p=pagePermissions.singleWhereOrNull((element) => element.pageName==model.pageName);
-    if(p==null){
+  addPermissionList(PagePermission model) {
+    PagePermission? p = pagePermissions
+        .singleWhereOrNull((element) => element.pageName == model.pageName);
+    if (p == null) {
       pagePermissions.add(model);
-    }else{
-      pagePermissions.removeWhere((element) => element.pageName==model.pageName);
+    } else {
+      pagePermissions
+          .removeWhere((element) => element.pageName == model.pageName);
       pagePermissions.add(model);
     }
     print(model.toJson());
-
   }
 
   Future<void> getToken() async {
@@ -40,7 +46,7 @@ class RoleProviderNew with ChangeNotifier {
   }
 
   Future<void> getPages() async {
-    loading=true;
+    loading = true;
 
     notifyListeners();
     if (token == "") {
@@ -58,11 +64,13 @@ class RoleProviderNew with ChangeNotifier {
     final response = await http.get(uri, headers: header);
     debugPrint(response.body);
     Map<String, dynamic> data = json.decode(response.body);
-    pageList = List<PageModel>.from(data["pages"].map((x) => PageModel.fromJson(x)));
+    pageList =
+        List<PageModel>.from(data["pages"].map((x) => PageModel.fromJson(x)));
     notifyListeners();
   }
+
   Future<PagePermission?> getPermissions(int id) async {
-    loading=true;
+    loading = true;
 
     notifyListeners();
     if (token == "") {
@@ -75,21 +83,22 @@ class RoleProviderNew with ChangeNotifier {
       HttpHeaders.contentTypeHeader: 'application/json'
     };
 
-    final uri = Uri.parse('https://$baseUrl/api/v1/permisions/$id');
+    final uri = Uri.parse('https://$baseUrl/api/v1/permisions/$id/${selectedDropdownvalue!.id}/');
 
     final response = await http.get(uri, headers: header);
     debugPrint(response.body);
     Map<String, dynamic> data = json.decode(response.body);
 
-    loading=false;
+    loading = false;
     notifyListeners();
-    if(data.containsKey("error")){
+    if (data.containsKey("error")) {
       return null;
     }
-   return PagePermission.fromJson(data);
+    return PagePermission.fromJson(data);
   }
+
   Future<void> updatePermissions(BuildContext context) async {
-    loading=true;
+    loading = true;
 
     notifyListeners();
     if (token == "") {
@@ -103,13 +112,12 @@ class RoleProviderNew with ChangeNotifier {
     };
 
     final uri = Uri.parse('https://$baseUrl/api/v1/permisions/');
-    for (var element in pagePermissions)  {
-      final response = await http.post(uri, headers: header,body: jsonEncode(element));
+    for (var element in pagePermissions) {
+      final response =
+          await http.post(uri, headers: header, body: jsonEncode(element));
       debugPrint(response.body);
-
-
     }
-    loading=false;
+    loading = false;
     notifyListeners();
   }
 
@@ -180,8 +188,10 @@ class RoleProviderNew with ChangeNotifier {
     }
     //notifyListeners();
   }
-
+bool loadingFOr=false;
   void addBusiness(Roles model, BuildContext context, bool update) async {
+    loadingFOr = true;
+    notifyListeners();
     var header = {
       "Authorization": "Token $token",
       HttpHeaders.contentTypeHeader: 'application/json'
@@ -194,22 +204,10 @@ class RoleProviderNew with ChangeNotifier {
         await http.post(uri, headers: header, body: jsonEncode(body));
 
     if (response.statusCode == HttpStatus.created) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return CupertinoAlertDialog(
-              title: const Text('Added'),
-              content: const Text('Role added successfully'),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Ok'),
-                ),
-              ],
-            );
-          });
+      Map<String, dynamic> data = json.decode(response.body);
+      selectedDropdownvalue = Roles.fromJson(data);
+      loadingFOr = false;
+      notifyListeners();
     } else if (response.statusCode == HttpStatus.badRequest) {
       Map<String, dynamic> data = json.decode(response.body);
       print(response.body);

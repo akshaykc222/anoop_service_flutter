@@ -18,7 +18,6 @@ class RoleList extends StatefulWidget {
 }
 
 class _RoleListState extends State<RoleList> {
-
   void showAddRole(BuildContext _context) {
     showModalBottomSheet(
         context: _context,
@@ -30,22 +29,19 @@ class _RoleListState extends State<RoleList> {
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
             child: Wrap(
-              children: const [
-                RoleForm()
-
-              ],
+              children: const [RoleForm()],
             ),
           );
         });
   }
+
   @override
   void initState() {
-
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      Provider.of<RoleProviderNew>(context,listen: false).getBusinessList(context);
+      Provider.of<RoleProviderNew>(context, listen: false)
+          .getBusinessList(context);
     });
-
   }
 
   @override
@@ -57,29 +53,32 @@ class _RoleListState extends State<RoleList> {
           color: lightBlack,
           child: Padding(
             padding: const EdgeInsets.only(bottom: 30),
-            child: Consumer<RoleProviderNew>(
-
-              builder: (context, snapshot,child) {
-                return snapshot.loading?const Center(child: CircularProgressIndicator(),): GridView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: snapshot.roleList.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 5,
-                      crossAxisSpacing: 5,
-                      childAspectRatio:
-                          MediaQuery.of(context).size.width * 0.3 / 80),
-                  itemBuilder: (_, index) {
-                    return RoleListTile(title: snapshot.roleList[index]);
-                  },
-                );
-              }
-            ),
+            child:
+                Consumer<RoleProviderNew>(builder: (context, snapshot, child) {
+              return snapshot.loading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : GridView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: snapshot.roleList.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 5,
+                          crossAxisSpacing: 5,
+                          childAspectRatio:
+                              MediaQuery.of(context).size.width * 0.3 / 80),
+                      itemBuilder: (_, index) {
+                        return RoleListTile(title: snapshot.roleList[index]);
+                      },
+                    );
+            }),
           )),
       floatingActionButton: FloatingActionButton(
         backgroundColor: lightBlack,
         onPressed: () {
-         showAddRole(context);
+          
+          Navigator.pushNamed(context, roles);
         },
         child: const Center(
           child: Icon(
@@ -153,8 +152,9 @@ class RoleListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
-        onTap: (){
-          Provider.of<RoleProviderNew>(context,listen: false).setSelctedDropDown(title);
+        onTap: () {
+          Provider.of<RoleProviderNew>(context, listen: false)
+              .setSelctedDropDown(title);
           Navigator.push(
               context, MaterialPageRoute(builder: (_) => const UserRoles()));
         },
@@ -167,31 +167,33 @@ class RoleListTile extends StatelessWidget {
               Text(
                 title.roleName,
                 style: const TextStyle(
-                    color: textColor, fontSize: 18, fontWeight: FontWeight.bold),
+                    color: textColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
               spacer(8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-
-                 InkWell(
-                   onTap: (){
-                     Provider.of<RoleProviderNew>(context,listen: false).deletBusines(title, context);
-                   },
-                   child:  Container(
-                       decoration: BoxDecoration(
-                           borderRadius: BorderRadius.circular(8),
-                           color: lightBlack),
-                       child: Padding(
-                         padding: const EdgeInsets.all(8.0),
-                         child: SvgPicture.asset(
-                           'assets/icons/trash.svg',
-                           width: 20,
-                           height: 20,
-                           color: whiteColor,
-                         ),
-                       )),
-                 ),
+                  InkWell(
+                    onTap: () {
+                      Provider.of<RoleProviderNew>(context, listen: false)
+                          .deletBusines(title, context);
+                    },
+                    child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: lightBlack),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SvgPicture.asset(
+                            'assets/icons/trash.svg',
+                            width: 20,
+                            height: 20,
+                            color: whiteColor,
+                          ),
+                        )),
+                  ),
                   Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
