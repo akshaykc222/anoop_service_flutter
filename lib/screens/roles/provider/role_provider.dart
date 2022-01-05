@@ -116,6 +116,25 @@ class RoleProviderNew with ChangeNotifier {
       final response =
           await http.post(uri, headers: header, body: jsonEncode(element));
       debugPrint(response.body);
+      if(response.statusCode==HttpStatus.ok){
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return CupertinoAlertDialog(
+                title: const Text('Saved'),
+                content:const Text('data saved successfully'),
+                actions: <Widget>[
+                  CupertinoDialogAction(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Ok'),
+                  ),
+                ],
+              );
+            });
+      }
+
     }
     loading = false;
     notifyListeners();
@@ -153,7 +172,7 @@ class RoleProviderNew with ChangeNotifier {
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
-                title: const Text('Faild'),
+                title: const Text('Failed'),
                 content: Text(data['error']),
                 actions: <Widget>[
                   CupertinoDialogAction(
@@ -172,7 +191,7 @@ class RoleProviderNew with ChangeNotifier {
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
-                title: const Text('Faild'),
+                title: const Text('Failed'),
                 content: const Text(something),
                 actions: <Widget>[
                   CupertinoDialogAction(
@@ -304,7 +323,7 @@ bool loadingFOr=false;
               actions: <Widget>[
                 CupertinoDialogAction(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, business);
+                    Navigator.pop(context);
                   },
                   child: const Text('Ok'),
                 ),

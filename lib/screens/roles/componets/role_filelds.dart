@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 import 'package:seed_sales/componets.dart';
 import 'package:seed_sales/screens/roles/componets/current_user.dart';
@@ -19,19 +20,29 @@ class RoleFields extends StatefulWidget {
 
 class _RoleFieldsState extends State<RoleFields> {
   final roleText = TextEditingController();
+  RoleProviderNew? per;
   @override
   void initState() {
     super.initState();
+
+
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      per=Provider.of<RoleProviderNew>(context, listen: false);
+
       Provider.of<RoleProviderNew>(context, listen: false).getPages();
       Provider.of<RoleProviderNew>(context, listen: false)
           .getBusinessList(context);
+      Roles? rol=Provider.of<RoleProviderNew>(context, listen: false)
+          .selectedDropdownvalue;
+      if(rol!=null){
+        roleText.text=rol.roleName;
+      }
     });
   }
 
   @override
   void dispose() {
-    Provider.of<RoleProviderNew>(context).dispose();
+
     roleText.dispose();
     super.dispose();
   }
@@ -48,52 +59,91 @@ class _RoleFieldsState extends State<RoleFields> {
           //     },
           //     child: columTextFileds(context)),
           // const CurrentUser(),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-            child: Focus(
-              onFocusChange: (f) {
-               if(!f){
-                  Provider.of<RoleProviderNew>(context, listen: false)
-                      .addBusiness(Roles(roleName: roleText.text), context, false);
-               }
-              },
-              child: TextFormField(
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please Enter value for role";
+          KeyboardVisibilityBuilder(
+
+            builder: (context, snapshot) {
+              if(!snapshot && roleText.text.isNotEmpty){
+                WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+                  print("savingsdfsdffffffffffffffffffffffffffff");
+                  Roles? rol=Provider.of<RoleProviderNew>(context, listen: false)
+                      .selectedDropdownvalue;
+                  if(rol==null){
+                    Provider.of<RoleProviderNew>(context, listen: false)
+                        .addBusiness(Roles(roleName: roleText.text), context, false);
+                  }else{
+                    rol.roleName=roleText.text;
+                    Provider.of<RoleProviderNew>(context, listen: false)
+                        .updateBusiness( context, rol);
                   }
-                  return null;
-                },
-                onSaved: (value) {},
-                onFieldSubmitted: (val) {
-                  Provider.of<RoleProviderNew>(context, listen: false)
-                      .addBusiness(Roles(roleName: val), context, false);
-                },
-                controller: roleText,
-                keyboardType: TextInputType.name,
-                style: const TextStyle(color: textColor),
-                decoration: InputDecoration(
-                    labelText: 'Role',
-                    labelStyle: const TextStyle(
-                      color: whiteColor,
-                      fontSize: 13,
-                    ),
-                    floatingLabelBehavior: FloatingLabelBehavior.auto,
-                    hintText: 'Role',
-                    hintStyle: const TextStyle(color: textColor),
-                    filled: true,
-                    enabledBorder: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.red.shade500, width: 1)),
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.grey.shade500, width: 1)),
-                    disabledBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white30)),
-                    border: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white30))),
-              ),
-            ),
+                });
+
+              }
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                child: Focus(
+                  onFocusChange: (f) {
+                   if(!f){
+                     Roles? rol=Provider.of<RoleProviderNew>(context, listen: false)
+                         .selectedDropdownvalue;
+                     if(rol==null){
+                       Provider.of<RoleProviderNew>(context, listen: false)
+                           .addBusiness(Roles(roleName: roleText.text), context, false);
+                     }else{
+                       rol.roleName=roleText.text;
+                       Provider.of<RoleProviderNew>(context, listen: false)
+                           .updateBusiness( context, rol);
+                     }
+                   }
+                  },
+                  child: TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Please Enter value for role";
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {},
+                        onFieldSubmitted: (val) {
+                          Roles? rol=Provider.of<RoleProviderNew>(context, listen: false)
+                              .selectedDropdownvalue;
+                          if(rol==null){
+                            Provider.of<RoleProviderNew>(context, listen: false)
+                                .addBusiness(Roles(roleName: val), context, false);
+                          }else{
+                            rol.roleName=val;
+                            Provider.of<RoleProviderNew>(context, listen: false)
+                                .updateBusiness( context, rol);
+                          }
+
+                        },
+                        controller: roleText,
+                        keyboardType: TextInputType.name,
+                        style: const TextStyle(color: textColor),
+                        decoration: InputDecoration(
+                            labelText: 'Role',
+                            labelStyle: const TextStyle(
+                              color: whiteColor,
+                              fontSize: 13,
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.auto,
+                            hintText: 'Role',
+                            hintStyle: const TextStyle(color: textColor),
+                            filled: true,
+                            enabledBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.red.shade500, width: 1)),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade500, width: 1)),
+                            disabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white30)),
+                            border: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white30))),
+
+                  ),
+                ),
+              );
+            }
           ),
           spacer(10),
           const Padding(
@@ -168,14 +218,11 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
         .addPermissionList(model);
   }
 
-  late int roleId;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
-      roleId = Provider.of<RoleProviderNew>(context, listen: false)
-          .selectedDropdownvalue!
-          .id!;
+
       PagePermission? p =
           await Provider.of<RoleProviderNew>(context, listen: false)
               .getPermissions(widget.titlePermission.id);
@@ -268,7 +315,7 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
                                     } else {
                                       view = value;
                                       PagePermission p = PagePermission(
-                                          role: roleId,
+                                          role: r.id,
                                           pageName: widget.titlePermission.id,
                                           edit: view,
                                           create: create,
@@ -321,7 +368,7 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
                                     } else {
                                       create = value;
                                       PagePermission p = PagePermission(
-                                          role: roleId,
+                                          role: r.id,
                                           pageName: widget.titlePermission.id,
                                           edit: view,
                                           create: create,
@@ -378,7 +425,7 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
                                     } else {
                                       edit = value;
                                       PagePermission p = PagePermission(
-                                          role: roleId,
+                                          role: r.id,
                                           pageName: widget.titlePermission.id,
                                           edit: view,
                                           create: create,
@@ -431,7 +478,7 @@ class _UserRolesPermissionState extends State<UserRolesPermission> {
                                     } else {
                                       delete = value;
                                       PagePermission p = PagePermission(
-                                          role: roleId,
+                                          role: r.id,
                                           pageName: widget.titlePermission.id,
                                           edit: view,
                                           create: create,

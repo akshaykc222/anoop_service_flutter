@@ -41,6 +41,8 @@ class _RoleListState extends State<RoleList> {
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       Provider.of<RoleProviderNew>(context, listen: false)
           .getBusinessList(context);
+      Provider.of<RoleProviderNew>(context, listen: false)
+          .setSelctedDropDown(null);
     });
   }
 
@@ -77,7 +79,8 @@ class _RoleListState extends State<RoleList> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: lightBlack,
         onPressed: () {
-          
+          Provider.of<RoleProviderNew>(context, listen: false)
+              .setSelctedDropDown(null);
           Navigator.pushNamed(context, roles);
         },
         child: const Center(

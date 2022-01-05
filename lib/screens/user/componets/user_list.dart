@@ -28,31 +28,29 @@ class _UserListState extends State<UserList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+
       appBar: appBar("Users", [], context),
       resizeToAvoidBottomInset: false,
-      body: Expanded(
-        child: Container(
-          color: lightBlack,
-          child: Consumer<UserProviderNew>(builder: (context, snapshot, child) {
-            return snapshot.loading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : GridView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.userList.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 5,
-                        crossAxisSpacing: 5,
-                        childAspectRatio:
-                            MediaQuery.of(context).size.width * 0.3 / 90),
-                    itemBuilder: (_, index) {
-                      return UserListTile(title: snapshot.userList[index]);
-                    });
-          }),
-        ),
+      body: Container(
+        color: lightBlack,
+        child: Consumer<UserProviderNew>(builder: (context, snapshot, child) {
+          return snapshot.loading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : GridView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.userList.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 5,
+                      crossAxisSpacing: 5,
+                      childAspectRatio:
+                          MediaQuery.of(context).size.width * 0.3 / 90),
+                  itemBuilder: (_, index) {
+                    return UserListTile(title: snapshot.userList[index]);
+                  });
+        }),
       ),
       bottomNavigationBar: const BottomAppBar(
         color: blackColor,

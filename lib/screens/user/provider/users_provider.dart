@@ -143,7 +143,7 @@ class UserProviderNew with ChangeNotifier {
 
       print(body);
       final uri = Uri.parse('https://$baseUrl/api/v1/user_roles/');
-      print(uri);
+      print(jsonEncode(roleList));
       final res = await http.post(uri, headers: header, body: jsonEncode(roleList));
       log(res.body);
       showDialog(
