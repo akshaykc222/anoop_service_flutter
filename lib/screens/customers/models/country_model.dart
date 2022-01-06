@@ -40,7 +40,7 @@ class CustomerModel {
   factory CustomerModel.fromJson(Map<String, dynamic> json) => CustomerModel(
         id: json["id"],
         createdUser: json["created_user"],
-        mail: json['mail'],
+        mail: json['email'],
         name: json["name"],
         age: json["age"],
         phone: json["phone"],
@@ -62,7 +62,7 @@ class CustomerModel {
         "id": id,
         "created_user": createdUser,
         "name": name,
-        "mail": mail,
+        "email": mail,
         "age": age,
         "phone": phone,
         "blood": blood,

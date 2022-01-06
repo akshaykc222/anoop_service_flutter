@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:seed_sales/componets.dart';
 import 'package:seed_sales/constants.dart';
+import 'package:seed_sales/screens/dashbord/body.dart';
 import 'package:seed_sales/screens/user/body.dart';
 import 'package:seed_sales/screens/user/models/user_model.dart';
 import 'package:seed_sales/screens/user/provider/users_provider.dart';
@@ -27,49 +29,54 @@ class _UserListState extends State<UserList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-
-      appBar: appBar("Users", [], context),
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        color: lightBlack,
-        child: Consumer<UserProviderNew>(builder: (context, snapshot, child) {
-          return snapshot.loading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : GridView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.userList.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 5,
-                      crossAxisSpacing: 5,
-                      childAspectRatio:
-                          MediaQuery.of(context).size.width * 0.3 / 90),
-                  itemBuilder: (_, index) {
-                    return UserListTile(title: snapshot.userList[index]);
-                  });
-        }),
-      ),
-      bottomNavigationBar: const BottomAppBar(
-        color: blackColor,
-        child: SizedBox(
-          width: double.infinity,
-          height: 50,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context);
+        return false;
+      },
+      child: Scaffold(
+        appBar: appBar("Users", [], context),
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          color: lightBlack,
+          child: Consumer<UserProviderNew>(builder: (context, snapshot, child) {
+            return snapshot.loading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : GridView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.userList.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 5,
+                        crossAxisSpacing: 5,
+                        childAspectRatio:
+                            MediaQuery.of(context).size.width * 0.3 / 90),
+                    itemBuilder: (_, index) {
+                      return UserListTile(title: snapshot.userList[index]);
+                    });
+          }),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: lightBlack,
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (_) => const UserCreation()));
-        },
-        child: const Center(
-          child: Icon(Icons.add),
+        bottomNavigationBar: const BottomAppBar(
+          color: blackColor,
+          child: SizedBox(
+            width: double.infinity,
+            height: 50,
+          ),
         ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: lightBlack,
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const UserCreation()));
+          },
+          child: const Center(
+            child: Icon(Icons.add),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
@@ -104,8 +111,25 @@ class UserListTile extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    Provider.of<UserProviderNew>(context, listen: false)
-                        .deletBusines(title, context);
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CupertinoAlertDialog(
+                            title: const Text('Delete'),
+                            content: const Text(
+                                'Are you sure.This will delete the user'),
+                            actions: <Widget>[
+                              CupertinoDialogAction(
+                                onPressed: () {
+                                  Provider.of<UserProviderNew>(context,
+                                          listen: false)
+                                      .deletBusines(title, context);
+                                },
+                                child: const Text('Ok'),
+                              ),
+                            ],
+                          );
+                        });
                   },
                   child: Container(
                       decoration: BoxDecoration(

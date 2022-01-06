@@ -72,95 +72,110 @@ class _CustomerFormState extends State<CustomerForm> {
   void initState() {
     super.initState();
     if (widget.model != null) {
-      nameController.text = widget.model!.name!;
-      ageController.text = widget.model!.age.toString();
-      phoneController.text = widget.model!.phone;
-      stateController.text = widget.model!.state;
-      bloodController.text = widget.model!.blood;
-      countryController.text = widget.model!.country;
-      stateController.text = widget.model!.state;
-      cityController.text = widget.model!.city;
-      addressController.text = widget.model!.address;
-      pincodeController.text = widget.model!.pincode.toString();
-      insurance_company.text = widget.model!.insurance_comapny;
-      insurance_exp.text = widget.model!.insurance_expiry.toString();
-      insurance_num.text = widget.model!.insurance_num;
+      try {
+        nameController.text = widget.model!.name!;
+        ageController.text = widget.model!.age.toString();
+        phoneController.text = widget.model!.phone;
+        stateController.text = widget.model!.state;
+        bloodController.text = widget.model!.blood;
+        countryController.text = widget.model!.country;
+        stateController.text = widget.model!.state;
+        cityController.text = widget.model!.city;
+        addressController.text = widget.model!.address;
+        pincodeController.text = widget.model!.pincode.toString();
+        insurance_company.text = widget.model!.insurance_comapny;
+        insurance_exp.text = widget.model!.insurance_expiry.toString();
+        insurance_num.text = widget.model!.insurance_num;
+      } catch (e) {
+        print('g');
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Form(
-        key: formKey,
-        child: Column(
-          children: [
-            widget.model != null
-                ? headingText("Update Customer")
-                : headingText("Add Customer"),
-            columUserTextFiledsBlack(
-                "Enter name", "Title", TextInputType.name, nameController),
-            columUserTextFiledsBlack("Enter phone", "7907017542",
-                TextInputType.number, phoneController),
-            emailWhiteField("Enter mail", "a@gmail.com",
-                TextInputType.emailAddress, mailController),
-            columUserTextFiledsBlack(
-                "Enter age", "18", TextInputType.number, ageController),
-            columUserTextFiledsBlack(
-                "Enter blood", "o+", TextInputType.name, bloodController),
-            columUserTextFiledsBlack("Enter Country", "india",
-                TextInputType.name, countryController),
-            columUserTextFiledsBlack(
-                "Enter State", "kerala", TextInputType.name, stateController),
-            columUserTextFiledsBlack(
-                "Enter City", "Thrissur", TextInputType.name, cityController),
-            columUserTextFiledsBlack("Enter address", "address",
-                TextInputType.streetAddress, addressController),
-            columUserTextFiledsBlack(
-                "Pin code", "680684", TextInputType.number, pincodeController),
-            columUserTextFiledsBlack("insurance company", "lic",
-                TextInputType.name, insurance_company),
-            InkWell(
-              onTap: () {
-                _selectDate();
-              },
-              child: expiryDate("insurance expiry", "2025-02-02",
-                  TextInputType.datetime, insurance_exp),
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                widget.model != null
+                    ? const Text(
+                        'Update Customer',
+                        style: TextStyle(color: whiteColor, fontSize: 20),
+                      )
+                    : const Text(
+                        'Create Customer',
+                        style: TextStyle(color: whiteColor, fontSize: 20),
+                      ),
+                columUserTextFileds(
+                    "Enter name", "Title", TextInputType.name, nameController),
+                columUserTextFileds("Enter phone", "7907017542",
+                    TextInputType.number, phoneController),
+                emailWhiteField("Enter mail", "a@gmail.com",
+                    TextInputType.emailAddress, mailController),
+                columUserTextFileds(
+                    "Enter age", "18", TextInputType.number, ageController),
+                columUserTextFileds(
+                    "Enter blood", "o+", TextInputType.name, bloodController),
+                columUserTextFileds("Enter Country", "india",
+                    TextInputType.name, countryController),
+                columUserTextFileds("Enter State", "kerala", TextInputType.name,
+                    stateController),
+                columUserTextFileds("Enter City", "Thrissur",
+                    TextInputType.name, cityController),
+                columUserTextFileds("Enter address", "address",
+                    TextInputType.streetAddress, addressController),
+                columUserTextFileds("Pin code", "680684", TextInputType.number,
+                    pincodeController),
+                columUserTextFileds("insurance company", "lic",
+                    TextInputType.name, insurance_company),
+                InkWell(
+                  onTap: () {
+                    _selectDate();
+                  },
+                  child: expiryDate("insurance expiry", "2025-02-02",
+                      TextInputType.datetime, insurance_exp),
+                ),
+                columUserTextFileds("insurance number", "12234",
+                    TextInputType.name, insurance_num),
+                spacer(10),
+                // Visibility(
+                //     visible: !isService, child: columUserTextFileds("Duration")),
+                Consumer<CustomerProvider>(builder: (context, snapshot, child) {
+                  return snapshot.loading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            InkWell(
+                                onTap: () {
+                                  _upload();
+                                },
+                                child: defaultButton(
+                                    SizeConfig.screenWidth! * 0.5,
+                                    widget.model != null ? "update" : add)),
+                            InkWell(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text(
+                                  cancel,
+                                  style: TextStyle(color: blackColor),
+                                ))
+                          ],
+                        );
+                }),
+                spacer(10)
+              ],
             ),
-            columUserTextFiledsBlack(
-                "insurance number", "12234", TextInputType.name, insurance_num),
-            spacer(10),
-            // Visibility(
-            //     visible: !isService, child: columUserTextFileds("Duration")),
-            Consumer<CustomerProvider>(builder: (context, snapshot, child) {
-              return snapshot.loading
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        InkWell(
-                            onTap: () {
-                              _upload();
-                            },
-                            child: defaultButton(SizeConfig.screenWidth! * 0.5,
-                                widget.model != null ? "update" : add)),
-                        InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              cancel,
-                              style: TextStyle(color: blackColor),
-                            ))
-                      ],
-                    );
-            }),
-            spacer(10)
-          ],
+          ),
         ),
       ),
     );
@@ -181,25 +196,25 @@ Widget expiryDate(String label, String hint, TextInputType keyboard,
       enabled: false,
       controller: controller,
       keyboardType: keyboard,
-      style: const TextStyle(color: blackColor),
+      style: const TextStyle(color: whiteColor),
       decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: blackColor),
+            color: whiteColor,
+            fontSize: 13,
+          ),
           floatingLabelBehavior: FloatingLabelBehavior.auto,
           hintText: hint,
-          hintStyle: const TextStyle(color: blackColor),
+          hintStyle: const TextStyle(color: textColor),
           filled: true,
-          enabledBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: blackColor,
-              width: 2.0,
-            ),
-          ),
+          enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.red.shade500, width: 1)),
+          focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade500, width: 1)),
           disabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: blackColor)),
+              borderSide: BorderSide(color: Colors.white30)),
           border: const UnderlineInputBorder(
-              borderSide: BorderSide(color: blackColor))),
+              borderSide: BorderSide(color: Colors.white30))),
     ),
   );
 }
@@ -219,25 +234,25 @@ Widget emailWhiteField(String label, String hint, TextInputType keyboard,
       },
       controller: controller,
       keyboardType: keyboard,
-      style: const TextStyle(color: blackColor),
+      style: const TextStyle(color: whiteColor),
       decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: blackColor),
+            color: whiteColor,
+            fontSize: 13,
+          ),
           floatingLabelBehavior: FloatingLabelBehavior.auto,
           hintText: hint,
-          hintStyle: const TextStyle(color: blackColor),
+          hintStyle: const TextStyle(color: textColor),
           filled: true,
-          enabledBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: blackColor,
-              width: 2.0,
-            ),
-          ),
+          enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.red.shade500, width: 1)),
+          focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade500, width: 1)),
           disabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: blackColor)),
+              borderSide: BorderSide(color: Colors.white30)),
           border: const UnderlineInputBorder(
-              borderSide: BorderSide(color: blackColor))),
+              borderSide: BorderSide(color: Colors.white30))),
     ),
   );
 }

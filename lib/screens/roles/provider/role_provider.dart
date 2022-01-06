@@ -83,7 +83,8 @@ class RoleProviderNew with ChangeNotifier {
       HttpHeaders.contentTypeHeader: 'application/json'
     };
 
-    final uri = Uri.parse('https://$baseUrl/api/v1/permisions/$id/${selectedDropdownvalue!.id}/');
+    final uri = Uri.parse(
+        'https://$baseUrl/api/v1/permisions/$id/${selectedDropdownvalue!.id}/');
 
     final response = await http.get(uri, headers: header);
     debugPrint(response.body);
@@ -116,13 +117,13 @@ class RoleProviderNew with ChangeNotifier {
       final response =
           await http.post(uri, headers: header, body: jsonEncode(element));
       debugPrint(response.body);
-      if(response.statusCode==HttpStatus.ok){
+      if (response.statusCode == HttpStatus.ok) {
         showDialog(
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
                 title: const Text('Saved'),
-                content:const Text('data saved successfully'),
+                content: const Text('data saved successfully'),
                 actions: <Widget>[
                   CupertinoDialogAction(
                     onPressed: () {
@@ -134,7 +135,6 @@ class RoleProviderNew with ChangeNotifier {
               );
             });
       }
-
     }
     loading = false;
     notifyListeners();
@@ -207,7 +207,8 @@ class RoleProviderNew with ChangeNotifier {
     }
     //notifyListeners();
   }
-bool loadingFOr=false;
+
+  bool loadingFOr = false;
   void addBusiness(Roles model, BuildContext context, bool update) async {
     loadingFOr = true;
     notifyListeners();
@@ -286,6 +287,21 @@ bool loadingFOr=false;
                   final uri = Uri.parse('https://$baseUrl/api/v1/roles/');
                   debugPrint(token);
                   final response = await http.delete(uri, headers: header);
+                  if (response.statusCode == HttpStatus.ok) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                      'deleted',
+                      style: TextStyle(color: whiteColor),
+                    )));
+                    Navigator.pop(context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                      'this can not be deleted',
+                      style: TextStyle(color: whiteColor),
+                    )));
+                    Navigator.pop(context);
+                  }
                 },
                 child: const Text('delete'),
               ),
@@ -319,7 +335,7 @@ bool loadingFOr=false;
           builder: (BuildContext context) {
             return CupertinoAlertDialog(
               title: const Text('Updated'),
-              content: const Text('Business updated successfully'),
+              content: const Text('role updated successfully'),
               actions: <Widget>[
                 CupertinoDialogAction(
                   onPressed: () {
@@ -339,7 +355,7 @@ bool loadingFOr=false;
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
-                title: const Text('Faild'),
+                title: const Text('Failed'),
                 content: Text(data['error']),
                 actions: <Widget>[
                   CupertinoDialogAction(
@@ -359,7 +375,7 @@ bool loadingFOr=false;
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
-                title: const Text('Faild'),
+                title: const Text('Failed'),
                 content: const Text(something),
                 actions: <Widget>[
                   CupertinoDialogAction(

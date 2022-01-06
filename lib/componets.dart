@@ -24,7 +24,7 @@ PreferredSizeWidget appBar(
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.maybePop(context);
                 },
                 child: Padding(
                   padding:

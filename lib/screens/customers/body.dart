@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +26,6 @@ class _CustomerListState extends State<CustomerList> {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -137,8 +138,8 @@ class _CustomerListState extends State<CustomerList> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: lightBlack,
         onPressed: () {
-          // Navigator.push(context, MaterialPageRoute(builder: (_)=>const CustomerListForm()));
-          showAddAlert(context);
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const CustomerForm()));
         },
         child: const Center(
           child: Icon(Icons.add),
@@ -156,6 +157,7 @@ class CustomerListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    log(model.toJson().toString());
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -230,17 +232,27 @@ class CustomerListTile extends StatelessWidget {
                         ),
                       )),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: lightBlack),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SvgPicture.asset(
-                      'assets/icons/edit.svg',
-                      width: 20,
-                      height: 20,
-                      color: whiteColor,
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => CustomerForm(
+                                  model: model,
+                                )));
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: lightBlack),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SvgPicture.asset(
+                        'assets/icons/edit.svg',
+                        width: 20,
+                        height: 20,
+                        color: whiteColor,
+                      ),
                     ),
                   ),
                 ),

@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:seed_sales/constants.dart';
+import 'package:seed_sales/constants.dart' as constant;
 import 'package:seed_sales/screens/user/models/role_models.dart';
 import 'package:seed_sales/screens/user/models/user_model.dart';
 import 'package:http/http.dart' as http;
@@ -56,7 +57,7 @@ class UserProviderNew with ChangeNotifier {
       HttpHeaders.contentTypeHeader: 'application/json'
     };
 
-    final uri = Uri.parse('https://$baseUrl/api/v1/users/');
+    final uri = Uri.parse('https://${constant.baseUrl}/api/v1/users/');
     debugPrint(token);
     final response = await http.get(uri, headers: header);
     debugPrint(response.body);
@@ -76,7 +77,7 @@ class UserProviderNew with ChangeNotifier {
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
-                title: const Text('Faild'),
+                title: const Text('Failed'),
                 content: Text(data['error']),
                 actions: <Widget>[
                   CupertinoDialogAction(
@@ -96,7 +97,7 @@ class UserProviderNew with ChangeNotifier {
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
                 title: const Text('Faild'),
-                content: const Text(something),
+                content: const Text(constant.something),
                 actions: <Widget>[
                   CupertinoDialogAction(
                     onPressed: () {
@@ -125,7 +126,8 @@ class UserProviderNew with ChangeNotifier {
     };
     var body = model.toJson();
     print(body);
-    final uri = Uri.parse('https://$baseUrl/api/v1/rest-auth/registration/');
+    final uri =
+        Uri.parse('https://${constant.baseUrl}/api/v1/rest-auth/registration/');
     print(uri);
     final response =
         await http.post(uri, headers: header, body: jsonEncode(body));
@@ -142,9 +144,10 @@ class UserProviderNew with ChangeNotifier {
       };
 
       print(body);
-      final uri = Uri.parse('https://$baseUrl/api/v1/user_roles/');
+      final uri = Uri.parse('https://${constant.baseUrl}/api/v1/user_roles/');
       print(jsonEncode(roleList));
-      final res = await http.post(uri, headers: header, body: jsonEncode(roleList));
+      final res =
+          await http.post(uri, headers: header, body: jsonEncode(roleList));
       log(res.body);
       showDialog(
           context: context,
@@ -157,7 +160,6 @@ class UserProviderNew with ChangeNotifier {
                   onPressed: () {
                     getBusinessList(context);
                     Navigator.pop(context);
-                    Navigator.pop(context);
                   },
                   child: const Text('Ok'),
                 ),
@@ -165,10 +167,9 @@ class UserProviderNew with ChangeNotifier {
             );
           });
     } else if (response.statusCode == HttpStatus.badRequest) {
-
       try {
         Map<String, dynamic> data = json.decode(response.body);
-        String datad=json.encode(data);
+        String datad = json.encode(data);
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -186,13 +187,13 @@ class UserProviderNew with ChangeNotifier {
               );
             });
       } catch (e) {
-        log(e.toString()+"llll");
+        log(e.toString() + "llll");
         showDialog(
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
-                title: const Text('Faild'),
-                content: const Text(something),
+                title: const Text('Failed'),
+                content: const Text(constant.something),
                 actions: <Widget>[
                   CupertinoDialogAction(
                     onPressed: () {
@@ -207,50 +208,53 @@ class UserProviderNew with ChangeNotifier {
     }
   }
 
-  void deletBusines(UserModel model, BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-            title: const Text('Delete'),
-            content: const Text('This will delete this business'),
-            actions: <Widget>[
-              CupertinoDialogAction(
-                onPressed: () async {
-                  //action for delete
+  Future<void> deletBusines(UserModel model, BuildContext context) async {
+    //action for delete
 
-                  loading = true;
-                  notifyListeners();
-                  if (token == "") {
-                    await getToken();
-                  }
+    loading = true;
+    notifyListeners();
+    if (token == "") {
+      await getToken();
+    }
 
-                  debugPrint(
-                      "======================================================");
-                  var header = {
-                    "Authorization": "Token $token",
-                    HttpHeaders.contentTypeHeader: 'application/json'
-                  };
+    debugPrint("======================================================");
+    var header = {
+      "Authorization": "Token $token",
+      HttpHeaders.contentTypeHeader: 'application/json'
+    };
 
-                  final uri =
-                  Uri.parse('https://$baseUrl/api/v1/users/${model.id}');
-                  debugPrint(token);
-                  final response = await http.delete(uri, headers: header);
-                  debugPrint(response.body);
-
-                  //notifyListeners();
-
-                  notifyListeners();
-                  getBusinessList(context);
-                  Navigator.pop(context);
-                },
-                child: const Text('delete'),
-              ),
-            ],
-          );
-        });
+    final uri =
+        Uri.parse('https://${constant.baseUrl}/api/v1/users/${model.id}');
+    debugPrint(token);
+    final response = await http.delete(uri, headers: header);
+    debugPrint(response.body);
+    String re = response.body;
+    if (response.statusCode != HttpStatus.ok) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: const Text('Failed'),
+              content: const Text(
+                  'can not delete user because user contain realtion with roles.please delete roles inorder to delete user'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    getBusinessList(context);
+                    // Navigator.pushReplacementNamed(
+                    //     context, constant.userCreation);
+                  },
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          });
+    } else {
+      getBusinessList(context);
+      Navigator.pop(context);
+    }
+    //notifyListeners();
   }
-
-
-
 }
