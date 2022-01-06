@@ -53,7 +53,7 @@ class _UserCreationFormState extends State<UserCreationForm> {
           if (value!.isEmpty) {
             return "Please Enter value for $hint";
           } else if (value.length < 5) {
-            return "password must have atleast 5 characters";
+            return "password must have at least 5 characters";
           } else if (passwordController.text != value) {
             return "password not same";
           }

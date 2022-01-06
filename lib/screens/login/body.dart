@@ -100,7 +100,7 @@ class _LoginState extends State<Login> {
                     if (value!.isEmpty) {
                       return "Enter Password";
                     } else if (value.length < 5) {
-                      return "password need atleast 5 character";
+                      return "password need at least 5 character";
                     }
                     return null;
                   },

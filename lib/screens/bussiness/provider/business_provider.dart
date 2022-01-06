@@ -237,16 +237,23 @@ class BusinessProvider with ChangeNotifier {
                   };
 
                   final uri =
-                      Uri.parse('https://$baseUrl/api/v1/business/${model.id}');
+                      Uri.parse('https://$baseUrl/api/v1/business/${model.id}/');
                   debugPrint(token);
                   final response = await http.delete(uri, headers: header);
-                  debugPrint(response.body);
+                  print(response.body);
+                  if(response.statusCode==HttpStatus.internalServerError){
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This can not be deleted.contain relation with other data')));
+                    Navigator.pop(context);
+                  }else{
+                    notifyListeners();
+                    getBusinessList(context);
+                    Navigator.pop(context);
+                  }
+
 
                   //notifyListeners();
 
-                  notifyListeners();
-                  getBusinessList(context);
-                  Navigator.pop(context);
+
                 },
                 child: const Text('delete'),
               ),
@@ -323,13 +330,14 @@ class BusinessProvider with ChangeNotifier {
       loading = false;
       notifyListeners();
       Map<String, dynamic> data = json.decode(response.body);
+      String d= jsonEncode(data);
       try {
         showDialog(
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
                 title: const Text('Faild'),
-                content: Text(data['error']),
+                content: Text(d),
                 actions: <Widget>[
                   CupertinoDialogAction(
                     onPressed: () {

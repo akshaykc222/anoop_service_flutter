@@ -107,6 +107,7 @@ Widget columUserTextFileds(String label, String hint, TextInputType keyboard,
       },
       controller: controller,
       keyboardType: keyboard,
+
       style: const TextStyle(color: textColor),
       decoration: InputDecoration(
           labelText: label,

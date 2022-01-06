@@ -113,29 +113,51 @@ class RoleProviderNew with ChangeNotifier {
     };
 
     final uri = Uri.parse('https://$baseUrl/api/v1/permisions/');
+    bool ok=false;
     for (var element in pagePermissions) {
       final response =
           await http.post(uri, headers: header, body: jsonEncode(element));
       debugPrint(response.body);
       if (response.statusCode == HttpStatus.ok) {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return CupertinoAlertDialog(
-                title: const Text('Saved'),
-                content: const Text('data saved successfully'),
-                actions: <Widget>[
-                  CupertinoDialogAction(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Ok'),
-                  ),
-                ],
-              );
-            });
+        ok=true;
       }
     }
+    if(ok){
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: const Text('Saved'),
+              content: const Text('data saved successfully'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          });
+    }else{
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: const Text('Failed'),
+              content: const Text('data not saved '),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          });
+    }
+
     loading = false;
     notifyListeners();
   }
@@ -173,7 +195,7 @@ class RoleProviderNew with ChangeNotifier {
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
                 title: const Text('Failed'),
-                content: Text(data['error']),
+                content: Text(jsonEncode(data)),
                 actions: <Widget>[
                   CupertinoDialogAction(
                     onPressed: () {
@@ -236,8 +258,8 @@ class RoleProviderNew with ChangeNotifier {
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
-                title: const Text('Faild'),
-                content: Text(data['error'].toString()),
+                title: const Text('Failed'),
+                content: Text(jsonEncode(data)),
                 actions: <Widget>[
                   CupertinoDialogAction(
                     onPressed: () {
@@ -253,7 +275,7 @@ class RoleProviderNew with ChangeNotifier {
             context: context,
             builder: (BuildContext context) {
               return CupertinoAlertDialog(
-                title: const Text('Faild'),
+                title: const Text('Failed'),
                 content: const Text(something),
                 actions: <Widget>[
                   CupertinoDialogAction(

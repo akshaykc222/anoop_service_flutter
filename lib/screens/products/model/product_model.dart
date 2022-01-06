@@ -19,6 +19,7 @@ class ProductModel {
   int? id;
   int? createdUser;
   String name;
+
   double purchaseRate;
   double mrp;
   double salesPercentage;
