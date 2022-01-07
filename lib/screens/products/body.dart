@@ -76,7 +76,7 @@ class _AddTreatmentsState extends State<AddTreatments> {
         .id!;
     if (subID == null) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('select sub catefory')));
+          .showSnackBar(const SnackBar(content: Text('select sub category')));
     } else if (widget.model != null) {
       if (titleController.text.isEmpty ||
           purchaseController.text.isEmpty ||
@@ -92,6 +92,7 @@ class _AddTreatmentsState extends State<AddTreatments> {
             name: titleController.text,
             purchaseRate: double.parse(purchaseController.text),
             mrp: double.parse(mrpController.text),
+            is_product: service == "service" ? false : true,
             salesPercentage: double.parse(salespController.text),
             salesRate: double.parse(salesRController.text),
             duration: durationController.text == null ||
@@ -142,15 +143,16 @@ class _AddTreatmentsState extends State<AddTreatments> {
     }
   }
 
-
-  Future<void> _showDatePicker()async{
-    final DateTime? picked=await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime.now().add (const Duration(days: 360)));
-    if(picked != null)
-    {
+  Future<void> _showDatePicker() async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime.now().add(const Duration(days: 360)));
+    if (picked != null) {
       setState(() {
-        expiryController.text=DateFormat("yyyy-MM-dd").format(picked);
+        expiryController.text = DateFormat("yyyy-MM-dd").format(picked);
       });
-
     }
   }
 
@@ -207,7 +209,7 @@ class _AddTreatmentsState extends State<AddTreatments> {
           columUserTextFiledsBlack("Enter Tax Rate", "Tax Rate",
               TextInputType.number, taxRateController),
           InkWell(
-            onTap: (){
+            onTap: () {
               _showDatePicker();
             },
             child: dateField("Enter Expiry date", "Expiry date",
@@ -272,8 +274,9 @@ class _AddTreatmentsState extends State<AddTreatments> {
     );
   }
 }
-Widget dateField(String label, String hint,
-    TextInputType keyboard, TextEditingController controller) {
+
+Widget dateField(String label, String hint, TextInputType keyboard,
+    TextEditingController controller) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
     child: TextFormField(

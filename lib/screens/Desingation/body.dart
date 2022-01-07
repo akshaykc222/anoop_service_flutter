@@ -47,8 +47,10 @@ class _DesignationsState extends State<Designations> {
                                 var random = Random();
                                 Provider.of<DesignationProvider>(context,
                                         listen: false)
-                                    .addBusiness(DesingationModel(
-                                        designation: designationText.text),context);
+                                    .addBusiness(
+                                        DesingationModel(
+                                            designation: designationText.text),
+                                        context);
                               },
                               child: defaultButton(
                                   MediaQuery.of(context).size.width * 0.4,
@@ -75,15 +77,31 @@ class _DesignationsState extends State<Designations> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar("Designations", [], context),
-      body: Container(),
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
+    return  Scaffold(
+      extendBody: true,
+      appBar: appBar("Categories", [], context),
+      resizeToAvoidBottomInset: false,
+      body: Container(
+        color: lightBlack,
+        child:ListDesingations(),
+      ),
+      bottomNavigationBar: const BottomAppBar(
+        color: blackColor,
+        child: SizedBox(
           width: double.infinity,
-          color: whiteColor,
+          height: 50,
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: lightBlack,
+        onPressed: () {
+            showAddAlert();
+        },
+        child: const Center(
+          child: Icon(Icons.add),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

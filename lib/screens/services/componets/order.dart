@@ -38,43 +38,48 @@ class _OrderProductsState extends State<OrderProducts> {
   final rem_date = TextEditingController();
   final description = TextEditingController();
   final refferd = TextEditingController();
-  final formKey=GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   DateTime? bookDate;
   DateTime? bookTime;
   DateTime? reminderdate;
-  Future<void> _showBookingRemPicker()async{
-    final DateTime? picked=await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime.now().add(const Duration(days: 360)));
-    if(picked != null)
-    {
+  Future<void> _showBookingRemPicker() async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime.now().add(const Duration(days: 360)));
+    if (picked != null) {
       setState(() {
-        rem_date.text=DateFormat("yyyy-MM-dd").format(picked);
-        reminderdate=picked;
-      });
-
-    }
-  }
-  Future<void> _showTimePicker()async{
-    final TimeOfDay? picked=await showTimePicker(context: context,initialTime: TimeOfDay(hour: 5,minute: 10));
-    if(picked != null)
-    {
-      setState(() {
-        time.text=picked.format(context);
-
+        rem_date.text = DateFormat("yyyy-MM-dd").format(picked);
+        reminderdate = picked;
       });
     }
   }
 
-  Future<void> _showBookingPicker()async{
-    final DateTime? picked=await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime.now().add(const Duration(days: 360)));
-    if(picked != null)
-    {
+  Future<void> _showTimePicker() async {
+    final TimeOfDay? picked = await showTimePicker(
+        context: context, initialTime: TimeOfDay(hour: 5, minute: 10));
+    if (picked != null) {
       setState(() {
-        date.text=DateFormat("yyyy-MM-dd").format(picked);
-        bookDate=picked;
+        time.text = picked.format(context);
       });
-
     }
   }
+
+  Future<void> _showBookingPicker() async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime.now().add(const Duration(days: 360)));
+    if (picked != null) {
+      setState(() {
+        date.text = DateFormat("yyyy-MM-dd").format(picked);
+        bookDate = picked;
+      });
+    }
+  }
+
   DateTime selectedDate = DateTime.now();
   _selectDate() async {
     final DateTime? selected = await showDatePicker(
@@ -92,14 +97,13 @@ class _OrderProductsState extends State<OrderProducts> {
 
   @override
   void initState() {
-
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       Provider.of<CustomerProvider>(context, listen: false).emptyDropdown();
-      Provider.of<ProductProvider>(context, listen: false).emptyAppointmentList();
-      Provider.of<CustomerProvider>(context, listen: false).getCategoryList(context);
-
-
+      Provider.of<ProductProvider>(context, listen: false)
+          .emptyAppointmentList();
+      Provider.of<CustomerProvider>(context, listen: false)
+          .getCategoryList(context);
     });
   }
 
@@ -114,14 +118,15 @@ class _OrderProductsState extends State<OrderProducts> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 25),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 25),
                 child: Consumer<CustomerProvider>(
                     builder: (context, provider, child) {
                   return DropdownButtonFormField(
                     value: provider.selectedCategory,
                     icon: const Icon(Icons.keyboard_arrow_down),
-                    decoration: defaultDecoration(
-                        "select Customer", "Select Customer"),
+                    decoration:
+                        defaultDecoration("select Customer", "Select Customer"),
                     items: provider.customerList
                         .map((e) => DropdownMenuItem<CustomerModel>(
                             value: e, child: Text(e.name!)))
@@ -132,27 +137,31 @@ class _OrderProductsState extends State<OrderProducts> {
                   );
                 }),
               ),
-               InkWell(
-                 onTap: (){
-                   Navigator.pushNamed(context, products);
-                 },
-                   child:const Text("Not listed?. add here",style: TextStyle(color: Colors.blue),)),
               InkWell(
-                onTap: (){
+                  onTap: () {
+                    Navigator.pushNamed(context, customers);
+                  },
+                  child: const Text(
+                    "Not listed?. add here",
+                    style: TextStyle(color: Colors.blue),
+                  )),
+              InkWell(
+                onTap: () {
                   _showBookingPicker();
                 },
                 child: dateFiled(
                     "Booking date", "11/11/2021", TextInputType.datetime, date),
               ),
               InkWell(
-                onTap: (){
+                onTap: () {
                   _showTimePicker();
                 },
                 child: dateFiled(
                     "Booking time", "10.00 am", TextInputType.datetime, time),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: Stack(
@@ -236,10 +245,11 @@ class _OrderProductsState extends State<OrderProducts> {
               columUserTextFileds(
                   "Due amount", "1270", TextInputType.number, pending),
               InkWell(
-                  onTap: (){
+                  onTap: () {
                     _showBookingRemPicker();
                   },
-                  child: dateFiled("reminder date", "reminder",TextInputType.none, rem_date))
+                  child: dateFiled("reminder date", "reminder",
+                      TextInputType.none, rem_date))
               // Padding(
               //   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
               //   child: DropdownButtonFormField(
@@ -298,35 +308,44 @@ class _OrderProductsState extends State<OrderProducts> {
               //     },
               //   ),
               // ),
-              ,columUserTextFileds("initial consultant", "Dr ravi",
-                  TextInputType.name,in_consultant ),
+              ,
+              columUserTextFileds("initial consultant", "Dr ravi",
+                  TextInputType.name, in_consultant),
               columUserTextFileds("Main consultant", "Dr ravi",
                   TextInputType.name, main_consultant),
 
               columUserTextFileds(
                   "Notes", " decription", TextInputType.multiline, description),
-              InkWell(
-                  onTap: () async {
-                   if (formKey.currentState!.validate()) {
-                     var selec_customer=Provider.of<CustomerProvider>(context,listen: false).selectedCategory;
-                     AppointMentModel model=AppointMentModel(bookingDate: bookDate!, proposedFee: double.parse(proposed_fee.text), customerFee: double.parse(actual_fee.text), amountPaid: double.parse(amount_paid.text), dueAmount: double.parse(pending.text),  reminderDate: reminderdate!, notes:description.text ,  customer: selec_customer!.id!, initialConsultant: 1, mainConsultant: 1,refferdBy: 1);
+              InkWell(onTap: () async {
+                if (formKey.currentState!.validate()) {
+                  var selec_customer =
+                      Provider.of<CustomerProvider>(context, listen: false)
+                          .selectedCategory;
+                  AppointMentModel model = AppointMentModel(
+                      bookingDate: bookDate!,
+                      proposedFee: double.parse(proposed_fee.text),
+                      customerFee: double.parse(actual_fee.text),
+                      amountPaid: double.parse(amount_paid.text),
+                      dueAmount: double.parse(pending.text),
+                      reminderDate: reminderdate!,
+                      notes: description.text,
+                      customer: selec_customer!.id!,
+                      initialConsultant: 1,
+                      mainConsultant: 1,
+                      refferdBy: 1,
+                      status: 'p');
 
-                     Provider.of<AppointmentProvider>(context,listen: false).addCategory(model, context);
-
-
-
-
-
-
-
-                   }
-                  },
-                  child: Consumer<AppointmentProvider>(
-
-                    builder: (context, snapshot,child) {
-                      return snapshot.loading?Center(child: const CircularProgressIndicator(),) :defaultButton(300, "Book Customer");
-                    }
-                  ))
+                  Provider.of<AppointmentProvider>(context, listen: false)
+                      .addCategory(model, context);
+                }
+              }, child: Consumer<AppointmentProvider>(
+                  builder: (context, snapshot, child) {
+                return snapshot.loading
+                    ? Center(
+                        child: const CircularProgressIndicator(),
+                      )
+                    : defaultButton(300, "Book Customer");
+              }))
             ],
           ),
         ),
@@ -334,6 +353,7 @@ class _OrderProductsState extends State<OrderProducts> {
     );
   }
 }
+
 Widget dateFiled(String label, String hint, TextInputType keyboard,
     TextEditingController controller) {
   return Padding(

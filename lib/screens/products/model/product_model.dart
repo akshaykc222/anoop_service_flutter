@@ -11,6 +11,7 @@ class ProductModel {
     required this.salesRate,
     required this.taxRate,
     this.duration,
+    this.is_product,
     this.expiryDate,
     this.createdDate,
     required this.subCategory,
@@ -19,7 +20,7 @@ class ProductModel {
   int? id;
   int? createdUser;
   String name;
-
+  bool? is_product;
   double purchaseRate;
   double mrp;
   double salesPercentage;
@@ -40,6 +41,7 @@ class ProductModel {
         salesRate: json["sales_rate"].toDouble(),
         taxRate: json["tax_rate"].toDouble(),
         duration: json["duration"].toDouble(),
+        is_product: json['is_product'],
         expiryDate: json["expiry_date"] == null
             ? null
             : DateTime.parse(json["expiry_date"]),
@@ -53,6 +55,7 @@ class ProductModel {
         "name": name,
         "purchase_rate": purchaseRate,
         "mrp": mrp,
+        "is_product": is_product,
         "sales_percentage": salesPercentage,
         "sales_rate": salesRate,
         "tax_rate": taxRate,
@@ -67,10 +70,10 @@ class ProductModel {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is ProductModel &&
-              runtimeType == other.runtimeType &&
-              id == other.id &&
-              name == other.name  ;
+      other is ProductModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          name == other.name;
 
   @override
   int get hashCode => hashValues(id, name);

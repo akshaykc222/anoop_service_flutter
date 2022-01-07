@@ -414,5 +414,4 @@ class AppointmentProvider with ChangeNotifier {
       }
     }
   }
-
 }
